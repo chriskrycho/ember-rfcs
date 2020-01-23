@@ -51,6 +51,32 @@ on the impact of the API churn on existing apps, etc.
 
 > This section could also include prior art, that is, how other frameworks in the same domain have solved this problem.
 
+### A new String-based API
+
+Instead of providing an object-based API, we could provide a new string-based API. The `lookup` method, then, would have a signature like this:
+
+```ts
+interface Owner {
+  lookup(type: string, name: string, options: Options);
+}
+```
+
+This has the advantage of being a smaller diff from today's world (and fewer characters to type):
+
+```diff
+- lookup('service:foo')
++ lookup('service', 'foo')
+```
+
+vs.
+
+```diff
+- lookup('service:foo');
++ lookup({ type: 'service', name: 'foo' })
+```
+
+However, this is less amenable to later iteration, and requires that the implementation be a matter of introspecting on argument order. Supporting namespaces here would require *another* string argument, and functions with multiple arguments of the same type are notoriously easy to misuse. ("Which one goes first, namespace, or type?")
+
 ## Unresolved questions
 
 > Optional, but suggested for first drafts. What parts of the design are still
