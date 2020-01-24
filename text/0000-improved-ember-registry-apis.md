@@ -373,23 +373,44 @@ interface TypeRegistry {
   controller: ControllerRegistry;
 }
 
-interface LookupOptions {
-  singleton?: boolean;
-}
-
 interface Identifier<
-  Type extends keyof TypeRegistry,
-  Name extends keyof TypeRegistry[Type],
+  Type extends keyof TypeRegistry = keyof TypeRegistry,
+  Name extends keyof TypeRegistry[Type] = keyof TypeRegistry[Type]
 > {
   type: Type;
   name: Name;
   namespace?: string;
 }
 
+export interface LookupOptions {
+  singleton?: boolean;
+  instantiate?: boolean;
+  source?: string;
+  namespace?: string;
+}
+
+type Class<T extends {} = {}, Args extends unknown[] = unknown[]> =
+  new (...args: Args) => T;
+
+interface FactoryManager<T extends {} = {}> {
+  class: new (...args: unknown[]) => T;
+  create(initialValues?: {
+    [K in keyof T]?: T[K]
+  }): T;
+}
+
 interface Owner {
-  lookup<
-    Type extends keyof TypeRegistry,
-    Name extends keyof TypeRegistry[Type],
-  >(identifier: Identifier<Type, Name>, options?: Options): TypeRegistry[Type][Name];
+    factoryFor<
+        Type extends keyof TypeRegistry,
+        Name extends keyof TypeRegistry[Type],
+    >(
+        identifier: Identifier<Type, Name>,
+        options?: LookupOptions
+    ): FactoryManager<TypeRegistry[Type][Name]>;
+
+    lookup<
+        Type extends keyof TypeRegistry,
+        Name extends keyof TypeRegistry[Type],
+    >(identifier: Identifier<Type, Name>, options?: LookupOptions): TypeRegistry[Type][Name];
 }
 ```
