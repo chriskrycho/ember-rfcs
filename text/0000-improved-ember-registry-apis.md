@@ -89,6 +89,34 @@ type Resolver = ResolverV0 | ResolverV1;
 
 The other registry API changes may also be implemented in terms of the new resolver `schemaVersion` check.
 
+#### Owner APIs
+
+The following APIs are all present on “owners”, e.g. `EngineInstance`, `ApplicationInstance`, etc. They are presented here in alphabetical order for convenience.
+
+#### `Owner.factoryFor`
+
+#### `Owner.hasRegistration`
+
+#### `Owner.inject`
+
+#### `Owner.lookup`
+
+#### `Owner.register`
+
+#### `Owner.registerOptionsForType`
+
+#### `Owner.registerOptionsForType`
+
+#### `Owner.registeredOption`
+
+#### `Owner.registeredOptions`
+
+#### `Owner.registeredOptionsForType`
+
+#### `Owner.resolveRegistration`
+
+#### `Owner.unregister`
+
 
 ## How we teach this
 
