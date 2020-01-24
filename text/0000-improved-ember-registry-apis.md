@@ -31,7 +31,7 @@ The current design has worked well enough for a long time, but it adds conceptua
 
 This need often comes relatively early in the learning process: the first time a user needs to write a unit test for a service. We currently devote [an entire section of the guides](https://guides.emberjs.com/release/applications/dependency-injection/#toc_factory-registrations) to explaining how factory registrations work, including a paragraph devoted to explaining the microsyntax. A normal JavaScript API would simplify this entire section.
 
-Moreover, changing to a normal JavaScript-object-based API means tooling can provide in-editor benefits around autocompletion for the API, which is simply not possible for the microsyntax.
+Changing to a normal JavaScript-object-based API means tooling can provide in-editor benefits around autocompletion for the API, which is simply not possible for the microsyntax. Finally, a non-microsyntax API will be more amenable to future codemods if this should need to change in the future.
 
 ### TypeScript users
 
@@ -208,7 +208,26 @@ interface FactoryManager<T = object> {
 
 ### Codemod
 
-All existing microsyntax invocations can be straightforwardly migrated to the new syntax with a codemod.
+All existing *static* microsyntax invocations can be straightforwardly migrated to the new syntax with a codemod. Some dynamic invocations will not be possible to migrate this way.
+
+For example, this (in a test) is migrate-able:
+
+```js
+- this.owner.lookup('service:session');
++ this.owner.lookup({ type: 'service', name: 'session' });
+```
+
+But this is not:
+
+```js
+function buildLookup(type, name) {
+  return `${type}:${name}`;
+}
+
+this.owner.lookup(buildLookup('service', 'session'));
+```
+
+The majority of uses are likely to be codemoddable, but not *all* will.
 
 ### Deprecation messaging
 
