@@ -7,7 +7,7 @@
 
 ## Summary
 
-> One paragraph explanation of the feature.
+Introduce a new, object-based API for all registry APIs; deprecate the current single-string-based registry APIs; and introduce a `schema` property to the resolver to safely support existing resolvers.
 
 ## Motivation
 
