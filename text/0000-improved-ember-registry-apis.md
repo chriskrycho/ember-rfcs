@@ -14,6 +14,8 @@ Introduce a new, object-based API for all registry APIs; deprecate the current s
 > Why are we doing this? What use cases does it support? What is the expected
 outcome?
 
+Additionally, there may be some very small performance wins here, since in this schema there is no need to parse a string. This is not considered to be a significant motivator, however, since the tradeoffs between object allocation (memory utilization) and string parsing (CPU utilization) are likely to be largely irrelevant in practice for this API.
+
 ## Detailed design
 
 > This is the bulk of the RFC.
