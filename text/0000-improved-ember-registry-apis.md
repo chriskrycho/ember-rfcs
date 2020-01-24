@@ -242,7 +242,7 @@ Changes to `ember-resolver` will be introduced in a major version, signaling cle
 
 - **New concepts:** this RFC introduces the ideas of `Identifier` and `FactoryTypeIdentifier` to define the new identifier types passed as arguments to the various registry functions. The basic shapes of these objects, and perhaps their names (as inline text like “identifier” and “factory type identifier”) will need to be integrated into the guides and API docs. See also [**Unresolved Questions**](#unresolved-questions): there may be other names which work better.
 
-- The existing documentation about dependency injection can largely remain unchanged—mostly, it can be simplified in certain key areas. Paragraphs explaining the microsyntax can be eliminated or simplified by showing the identifier object type. New Ember users will continue to benefit from the detailed introduction to the concepts in the guides, but will have one fewer concept to learn along the way.
+- The existing documentation about dependency injection can unchanged apart from simplifications in certain key areas. Paragraphs explaining the microsyntax can be eliminated or simplified by showing the identifier object type. New Ember users will continue to benefit from the detailed introduction to the concepts in the guides, but will have one fewer concept to learn along the way.
 
 - All instances of the API documentation will need to be updated to reflect the changes to their signatures.
 
