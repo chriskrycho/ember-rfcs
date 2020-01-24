@@ -119,7 +119,7 @@ interface Owner {
 }
 ```
 
-This will be updated to use [`Identifiers`](#identifier) instead of a strings:
+This will be updated to use [`Identifiers`](#identifier) instead of strings:
 
 ```ts
 interface FactoryManager {
@@ -187,10 +187,6 @@ We introduce `FactoryTypeIdentifier` to distinguish between injections for *all 
 The `lookup` method is currently defined as:
 
 ```ts
-interface LookupOptions {
-  singleton?: boolean;
-}
-
 interface Owner {
   lookup(fullName: string, options?: LookupOptions): any;
 }
@@ -199,10 +195,6 @@ interface Owner {
 This will be updated to use an [`Identifier`](#identifier) instead of a string:
 
 ```ts
-interface LookupOptions {
-  singleton?: boolean;
-}
-
 interface Owner {
   lookup(identifier: Identifier, options?: LookupOptions): any;
 }
