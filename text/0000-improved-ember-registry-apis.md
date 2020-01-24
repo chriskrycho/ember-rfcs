@@ -45,6 +45,8 @@ Finally, there *may* be some very small performance wins here, since in this sch
 
 Every registry API will be updated to take a new `Identifier` type in place of the string microsyntax, while maintaining backwards compatibility by introducing versioning to the resolver. A codemod will be provided to allow users to migrate directly to the new API. The legacy resolver APIs are deprecated until Ember 4.0.
 
+(TypeScript consumers should see [**Proposed Type Definitions**](#proposed-type-definitions) in the appendix for additional details on type safety and resolution.)
+
 ### `Identifier`
 
 The core new type in the design of the API is an *identifier*, which is always passed as the first argument to resolver APIs.
@@ -146,8 +148,6 @@ interface Owner {
   factoryFor(identifier: Identifier, options: LookupOptions): FactoryManager;
 }
 ```
-
-(TypeScript consumers should see [**Proposed Type Definitions**](#proposed-type-definitions) in the appendix for details on type safety for this type in particular.)
 
 #### `Owner.hasRegistration`
 
