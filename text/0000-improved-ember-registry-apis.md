@@ -61,8 +61,7 @@ Here the `type` corresponds to the prefix component of the legacy API, and `name
 
 The `namespace` field allows for identifiers to be restricted to a particular namespace, as in for example tools which namespace lookups for addons (e.g. [ember-holy-futuristic-template-namespacing-batman](https://github.com/rwjblue/ember-holy-futuristic-template-namespacing-batman)). It is optional since it is not required in normal usage.
 
-
-###  Introducing a Resolver schema version
+### `Resolver`
 
 Ember’s `Resolver` function is public API, designed to be customized and overridden. To support backwards compatibility with existing custom resolvers, we introduce a `schemaVersion` key to the `Resolver` API, which may be `undefined` or an integer value. If `schemaVersion` is `undefined` or `0`, the legacy behavior of the resolver is maintained:
 
