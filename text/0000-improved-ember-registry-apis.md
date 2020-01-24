@@ -328,6 +328,30 @@ interface Owner {
 
 #### `Owner.resolveRegistration`
 
+The `resolveRegistration` method is currently defined as:
+
+```ts
+interface Factory<T> {
+  create(props?: object): T;
+}
+
+interface Owner {
+  resolveRegistration(type: string): Factory;
+}
+```
+
+This will be updated to use an [`Identifier`](#identifier) instead of a string:
+
+```ts
+interface Factory {
+  create(props?: object): object;
+}
+
+interface Owner {
+  resolveRegistration(identifier: Identifier): Factory;
+}
+```
+
 #### `Owner.unregister`
 
 ### Codemod
