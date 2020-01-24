@@ -87,6 +87,8 @@ The public API is *either* of the Resolver variants:
 type Resolver = ResolverV0 | ResolverV1;
 ```
 
+The other registry API changes may also be implemented in terms of the new resolver `schemaVersion` check.
+
 
 ## How we teach this
 
