@@ -142,26 +142,28 @@ interface RegisterOptions {
 
 #### `Factory` and `FactoryManager`
 
-Some APIs refer to *factories* and *factory managers*. The API for these classes is the same as it was previously, with the exception that the `fullName` and `normalizedNames` are deprecated:
+Some APIs refer to *factories* and *factory managers*. The API for these classes adds a new `identifier` field and deprecates the `fullName` and `normalizedName` fields:
 
-```ts
-interface FactoryClass {
-  positionalParams?: string | string[] | undefined | null;
-}
-
-interface Factory<T, C extends FactoryClass | object = FactoryClass> {
-  class?: C;
-  fullName?: string; // DEPRECATED
-  normalizedName?: string; // DEPRECATED
-  create(props?: { [prop: string]: any }): T;
-}
-
-interface FactoryManager<T = object> {
-  readonly class: Factory<T>;
-  readonly fullName?: string; // DEPRECATED
-  readonly normalizedName?: string; // DEPRECATED
-  create(props?: object): T;
-}
+```diff
+ interface FactoryClass {
+   positionalParams?: string | string[] | undefined | null;
+ }
+ 
+ interface Factory<T, C extends FactoryClass | object = FactoryClass> {
+   class?: C;
+-  fullName?: string; // DEPRECATED
+-  normalizedName?: string; // DEPRECATED
++  identifier: Identifier;
+   create(props?: { [prop: string]: any }): T;
+ }
+ 
+ interface FactoryManager<T = object> {
+   readonly class: Factory<T>;
+-  readonly fullName?: string; // DEPRECATED
+-  readonly normalizedName?: string; // DEPRECATED
++  identifier: Identifier;
+   create(props?: object): T;
+ }
 ```
 
 **TODO: nail down what here is public API during RFC discussion.**
