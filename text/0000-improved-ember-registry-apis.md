@@ -106,6 +106,34 @@ export interface LookupOptions {
 
 #### `Owner.factoryFor`
 
+The `factoryFor` method is currenty defined as:
+
+```ts
+interface FactoryManager<T = object> {
+  class: typeof T;
+  create(): T;
+}
+
+interface Owner {
+  factoryFor(fullName: string, options: LookupOptions): FactoryManager;
+}
+```
+
+This will be updated to use [`Identifiers`](#identifier) instead of a strings:
+
+```ts
+interface FactoryManager {
+  class: object; // the registered or resolved class
+  create(): object; // returns an instance of the class
+}
+
+interface Owner {
+  factoryFor(identifier: Identifier, options: LookupOptions): FactoryManager;
+}
+```
+
+(TypeScript consumers should see [**Proposed Type Definitions**](#proposed-type-definitions) in the appendix for details on type safety for this type in particular.)
+
 #### `Owner.hasRegistration`
 
 #### `Owner.inject`
