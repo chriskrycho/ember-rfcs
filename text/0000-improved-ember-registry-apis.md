@@ -392,11 +392,7 @@ We would introduce the following types at DefinitelyTyped for the new API, along
 
 ```ts
 // ----- type utilities ----- //
-type ConstructorArgs<T> = T extends {
-  new (...args: infer U): unknown;
-}
-  ? U
-  : never;
+type ConstructorArgs<T> = T extends new (...args: infer U) => unknown ? U : never;
 
 type InstanceOf<T> = T extends new (...args: any) => infer R ? R : never;
 
