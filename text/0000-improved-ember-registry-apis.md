@@ -45,6 +45,22 @@ Finally, there *may* be some very small performance wins here, since in this sch
 
 Every registry API will be updated to take a new `Identifier` type in place of the string microsyntax, while maintaining backwards compatibility by introducing versioning to the resolver. A codemod will be provided to allow users to migrate directly to the new API. The legacy resolver APIs are deprecated until Ember 4.0.
 
+### `Identifier`
+
+The core new type in the design of the API is an *identifier*, which is always passed as the first argument to resolver APIs.
+
+```ts
+interface Identifier {
+  type: string;
+  name: string;
+  namespace?: string;
+}
+```
+
+Here the `type` corresponds to the prefix component of the legacy API, and `name` to the postfix component of the legacy API: `service:foo` becomes `{ type: 'service', name: 'foo' }`.
+
+The `namespace` field allows for identifiers to be restricted to a particular namespace, as in for example tools which namespace lookups for addons (e.g. [ember-holy-futuristic-template-namespacing-batman](https://github.com/rwjblue/ember-holy-futuristic-template-namespacing-batman)). It is optional since it is not required in the primary case.
+
 ###  Introducing a Resolver schema version
 
 Ember’s `Resolver` function is public API, designed to be customized and overridden. To support backwards compatibility with existing custom resolvers, we introduce a `schemaVersion` key to the `Resolver` API, which may be `undefined` or an integer value. If `schemaVersion` is `undefined` or `0`, the legacy behavior of the resolver is maintained:
