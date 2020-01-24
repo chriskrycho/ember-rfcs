@@ -210,7 +210,7 @@ interface FactoryManager<T = object> {
 
 All existing microsyntax invocations can be straightforwardly migrated to the new syntax with a codemod.
 
-### Deprecation
+### Deprecation messaging
 
 Invocation of v0 resolver APIs which require an `Identifier` will trigger the following deprecation message (using `lookup` as an example):
 
@@ -225,6 +225,18 @@ For methods which require a `FactoryTypeIdentifier`, the wording is adjusted app
 > You invoked `Owner.lookup` with a string type name: `'service'`. This usage is deprecated and will be removed in Ember 4.0. Instead, pass a factory type identifier object: `{ type: 'service' }`.
 
 Methods which support either `Identifier`s or `FactoryTypeIdentifier`s should display the appropriate variant of the message according to what the user actually supplied.
+
+### Rollout
+
+The rollout will be phased:
+
+- The new API will be introduced in a minor release as normal, *without* introducing the deprecation warning for the microsyntax-based design, and *including* the two codemods required for this API change: one for all Ember users, and one for TypeScript users (see [**Proposed Type Definitions**](#proposed-type-definitions) in the [**TypeScript Appendix**](#appendix-typescript) below.)
+
+- After *at least* one minor version, the deprecation message will be introduced. This will give addons time to adopt the new API *before* requiring 
+
+- We will supply a polyfill for the new behavior, supporting *at least* the current LTS. The behavior here can be polyfilled to many if not all existing LTS releases; we would likely limit this slightly, but would support *many* LTS releases.
+
+Changes to `ember-resolver` will be introduced in a major version, signaling clearly to users that there is a breaking change inbound.
 
 ## How we teach this
 
