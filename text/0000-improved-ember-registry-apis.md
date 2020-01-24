@@ -77,6 +77,34 @@ vs.
 
 However, this is less amenable to later iteration, and requires that the implementation be a matter of introspecting on argument order. Supporting namespaces here would require *another* string argument, and functions with multiple arguments of the same type are notoriously easy to misuse. ("Which one goes first, namespace, or type?")
 
+### String-based API as “sugar”
+
+While we prefer to have the object-based API as the *primary* API, we could supply the string-based API outlined above for the simple and most common case, so that this—
+
+```js
+lookup('service', 'foo')
+```
+
+—would be equivalent to this:
+
+```js
+lookup({ type: 'service', name: 'foo'})
+```
+
+This could be nice from an ergonomics perspective, and introduces only a small amount of extra complexity in the implementation: the resolver schema still clearly distinguishes between the `lookup('<type>:<name>')` form and `lookup(type, name)`. However, it does require introspection on the arguments passed to the functions.
+
+### Object-based API
+
+For a syntax 
+
+```js
+lookup({ service: 'foo' })
+```
+
+While this is nice from the perspective of the consumer of the API, it muddies the API substantially and makes implementation more complex and with much worse performance: the lookup would have to iterate over all keys on the object passed every time, mapping those keys to the *known* identifer interface and then checking the others against the registry.
+
+Implementer concerns should not be *primary*, but they are important, and here they have performance implications that, while not dramatic, can easily be avoided by other proposals.
+
 ## Unresolved questions
 
 - What is the right name for the parameter and interface for the lookup? `identifier` is a reasonable choice, but does overlap with the notion of identifiers from Ember Data.
