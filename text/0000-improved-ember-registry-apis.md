@@ -99,7 +99,7 @@ The following APIs are all present on “owners”, e.g. `EngineInstance`, `Appl
 
 #### `Owner.inject`
 
-The `inject` function is currently defined as:
+The `inject` method is currently defined as:
 
 ```ts
 interface Owner {
@@ -127,7 +127,7 @@ We introduce `FactoryTypeIdentifier` to distinguish between injections for *all 
 
 #### `Owner.lookup`
 
-The `lookup` function is currently defined as:
+The `lookup` method is currently defined as:
 
 ```ts
 interface LookupOptions {
