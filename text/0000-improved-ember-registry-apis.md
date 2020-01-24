@@ -112,10 +112,6 @@ on the impact of the API churn on existing apps, etc.
 
 ## Alternatives
 
-> What other designs have been considered? What is the impact of not doing this?
-
-> This section could also include prior art, that is, how other frameworks in the same domain have solved this problem.
-
 ### A new String-based API
 
 Instead of providing an object-based API, we could provide a new string-based API. The `lookup` method, then, would have a signature like this:
@@ -169,6 +165,10 @@ lookup({ service: 'foo' })
 While this is nice from the perspective of the consumer of the API, it muddies the API substantially and makes implementation more complex and with much worse performance: the lookup would have to iterate over all keys on the object passed every time, mapping those keys to the *known* identifer interface and then checking the others against the registry.
 
 Implementer concerns should not be *primary*, but they are important, and here they have performance implications that, while not dramatic, can easily be avoided by other proposals.
+
+### Do nothing
+
+Leaving the API as it is remains an option, with both the upsides and downsides of the _status quo_.
 
 ## Unresolved questions
 
