@@ -377,21 +377,41 @@ This *works*, but is additional boilerplate and, more importantly, *duplication 
 
 ### Proposed type definitions
 
-If we were to ship this, we would accompany it with the following types at DefinitelyTyped:
+If we were to ship this, we would make one significant change to the *existing* types on DefinitelyTyped, supplying a codemod for ember-cli-typescript users. Where today, the various type registries refer to the class types, we would update them to refer to the *constructor* type for the class. For example, for the service registry:
+
+```diff
+ interface Registry {
+-  session: Session;
++  session: typeof Session;
+ }
+```
+
+This single change unlocks the ability to rigorously and exhaustively supply types for the API proposed above, with no further changes to existing user code.
+
+We would introduce the following types at DefinitelyTyped for the new API, along with rigorous type tests to guarantee they provide the guarantees they specify. (A basic working demo of this is available on [this TypeScript playground][types-demo].)
 
 ```ts
-interface TypeRegistry {
-  service: ServiceRegistry;
-  controller: ControllerRegistry;
+// ----- type utilities ----- //
+type ConstructorArgs<T> = T extends {
+  new (...args: infer U): unknown;
 }
+  ? U
+  : never;
 
+type InstanceOf<T> = T extends new (...args: any) => infer R ? R : never;
+
+// ----- types to implement this RFC ----- //
 interface Identifier<
-  Type extends keyof TypeRegistry = keyof TypeRegistry,
-  Name extends keyof TypeRegistry[Type] = keyof TypeRegistry[Type]
+  Type extends keyof TypeRegistry,
+  Name extends keyof TypeRegistry[Type]
 > {
   type: Type;
   name: Name;
   namespace?: string;
+}
+
+interface FactoryTypeIdentifier<Type extends keyof TypeRegistry> {
+  type: Type;
 }
 
 export interface LookupOptions {
@@ -401,25 +421,118 @@ export interface LookupOptions {
   namespace?: string;
 }
 
-interface FactoryManager<T extends {} = {}> {
-  class: new (...args: unknown[]) => T;
-  create(props?: {
-    [K in keyof T]?: T[K]
-  }): T;
+interface RegisterOptions {
+  singleton?: boolean;
+  instantiate?: boolean;
+}
+
+interface FactoryManager<T> {
+  class: new (...args: ConstructorArgs<T>) => InstanceOf<T>;
+  create(
+    initialValues?: {
+      [K in keyof InstanceOf<T>]?: InstanceOf<T>[K];
+    }
+  ): T;
+}
+
+interface Factory<T> {
+  class: new (...args: ConstructorArgs<T>) => InstanceOf<T>;
+  create(
+    initialValues?: {
+      [K in keyof InstanceOf<T>]?: InstanceOf<T>[K];
+    }
+  ): T;
 }
 
 interface Owner {
-    factoryFor<
-        Type extends keyof TypeRegistry,
-        Name extends keyof TypeRegistry[Type],
-    >(
-        identifier: Identifier<Type, Name>,
-        options?: LookupOptions
-    ): FactoryManager<TypeRegistry[Type][Name]>;
+  factoryFor<
+    Type extends keyof TypeRegistry,
+    Name extends keyof TypeRegistry[Type]
+  >(
+    identifier: Identifier<Type, Name>,
+    options?: LookupOptions
+  ): FactoryManager<TypeRegistry[Type][Name]>;
 
-    lookup<
-        Type extends keyof TypeRegistry,
-        Name extends keyof TypeRegistry[Type],
-    >(identifier: Identifier<Type, Name>, options?: LookupOptions): TypeRegistry[Type][Name];
+  hasRegistration<
+    Type extends keyof TypeRegistry,
+    Name extends keyof TypeRegistry[Type]
+  >(
+    identifier: Identifier<Type, Name>
+  ): boolean;
+
+  inject<
+    Type extends keyof TypeRegistry,
+    Name extends keyof TypeRegistry[Type]
+  >(
+    factory: Identifier<Type, Name> | FactoryTypeIdentifier<Type>,
+    property: string,
+    injection: Identifier<Type, Name>
+  ): void;
+
+  lookup<
+    Type extends keyof TypeRegistry,
+    Name extends keyof TypeRegistry[Type]
+  >(
+    identifier: Identifier<Type, Name>,
+    options?: LookupOptions
+  ): InstanceOf<TypeRegistry[Type][Name]>;
+
+  register<
+    Type extends keyof TypeRegistry,
+    Name extends keyof TypeRegistry[Type]
+  >(
+    identifier: Identifier<Type, Name>,
+    factory: any,
+    options?: RegisterOptions
+  ): void;
+
+  registerOptions<
+    Type extends keyof TypeRegistry,
+    Name extends keyof TypeRegistry[Type]
+  >(
+    identifier: Identifier<Type, Name>,
+    options: RegisterOptions
+  ): void;
+
+  registerOptionsForType<Type extends keyof TypeRegistry>(
+    identifier: FactoryTypeIdentifier<Type>,
+    options: RegisterOptions
+  ): void;
+
+  registeredOption<
+    Type extends keyof TypeRegistry,
+    Name extends keyof TypeRegistry[Type],
+    OptionName extends keyof RegisterOptions
+  >(
+    identifier: Identifier<Type, Name>,
+    optionName: OptionName
+  ): Pick<RegisterOptions, OptionName>;
+
+  registeredOptions<
+    Type extends keyof TypeRegistry,
+    Name extends keyof TypeRegistry[Type]
+  >(
+    identifier: Identifier<Type, Name>
+  ): RegisterOptions;
+
+  registeredOptionsForType<Type extends keyof TypeRegistry>(
+    type: FactoryTypeIdentifier<Type>
+  ): RegisterOptions;
+
+  resolveRegistration<
+    Type extends keyof TypeRegistry,
+    Name extends keyof TypeRegistry[Type]
+  >(
+    identifier: Identifier<Type, Name>
+  ): Factory<TypeRegistry[Type][Name]>;
+
+  unregister<
+    Type extends keyof TypeRegistry,
+    Name extends keyof TypeRegistry[Type]
+  >(
+    identifier: Identifier<Type, Name>
+  ): void;
 }
 ```
+
+[types-demo]: https://www.typescriptlang.org/play/index.html#code/PTAEFpM0BcE8AOBTUBXGBLANhzSDOEU4oIAUGfMqAMID2AdvjAE6oDGMdLAgiwOb4APABUAfKAC8oEaCQAPGEgYATQgG8yoUAyQB3UAAoAdKYCGA-AC5QGBgDMkLUAFUAlDdQMA1gzp6GAG4yAF8tUAB+V3CbXQA3J2DKRBQASSYYMwZ2JAB5e1EJaVkFJVVCXQMTc0sbLLg3KQk7R2cAJUjQDtikBJYkkCIoUAQWJHAFDGY7flAx-inWOFgUwj1cAAtQMwRRulGMMyVQdg2s-hRiEnIyOyUWezMc0ABlJziMHLakBeYWZc02nwBHwGEYNioSDo9leILBQVCFDuTkez3oDFYdCwWCc31+S1AgO2uxw7CO8IhKWhoB4JM+5MY6Mx2MSiNuGJRTxQIhSeMW-0J4WBLA+ORsbxFnyQfL+cGC2nYjGZOJYNiZLCxKplS2CYTIgyuK2QhC4tgAtggcWblDBYBspl0AGI0IbQG7Ih5c0CpFQ2jD2DBOIThHnUUrKNSgbxIODU0PSn78uAAGnCADkzNa5IoI4Ro7GYfHtf8ANrxgC6ZAkRMhNnj8p0maQNgz1obDCb+AQXIiNj+M11SI5nuejqeXH+8Z9foDQfj2bKkfzcd5idl1fCtZkKUHZAUCG4to9qJQABk6HRvKgELkEJhGBohTMcVwGL3QAAjC84rINuzMLJMCOJB3y-LEkF-IU6FQFgcnffsGH4dtO27OC+1YAc2WPL1tScW97yYQUgWfJBX1A78IIRbR-0yDFDiUcjwMgvVsNHcduDgABZLIzAuFhCiIk4sDMfBrB0fQjFMYwLEENUH1YDgJz4QRCkaSQJHSADsjyApxAbdgxmAwxwmohhcEOLAADUzCwVACHfIltG0EsAGlbAYKMY2pTTaJyfJCnLd8fKyPzdLEVzywbbQwm0DwZF3ViUDHTgOIEol2GE0SeiqKSZLE9E-kU7hlOEcQ1I0jIQp0wp9MMpRjKc9zzJs6zbPsmxHKc1z3M8gtvUq7T-PEQKbGCwawoiqLQBi0A4pEBLhxPUBcgCJxBNRCc4Edbhg0a+dw3KXqV2QYsUxM0BWxQA6ly8wtV3xUsK3CMQGqcjBfTo2dVW9D7MC+0QUmTC6mzEVNGv2Aj8Hfc9L2vfD4XwcI4uSzbuI7PiAZOtcljLFJyxLS7yzEJJtDOfBiwZBhdqc-ac0O5c7qxh6zsay6F1zI7GYTZnceQSttBe873pnQNvunT7RcxpAgcusQkZsMCfwRcI7AAKyQThqe0WnFzzW7tyZpMwactnrr1vqi2xx68ee17tA2jjRt+-1JfjGWQdAAAfUAUY4qdnf++NQfOvZkBYeB0JYGZjdM9XOApH6RbnQHgetOXYpsOI6HeknQCwC8rwQLWDauumbot+6jfO02y-N47uaTXmkH50BBca4WJacJ2k-4t3U6QYPwbvBHoYLuHh4feX+q00KpdOpv8cJ4mKG0eZFiDc6dY5hmS9OmP+-Z+n9ctnmnoFu3bAD0Xu873uU9l-eHf+OoGBZpyIZHmxcJYeHJ4z0As45xXnMbGeEJ5MGLlvI+FdDayn3jXXWnNd5WzgAvW2Qsr5d0TrfKW7s077w-g+L+oCf7gMRv-QBKhc5r2YGAyG20WDxilofcu9dTptzepg76vtJwpHFn9V2KRB7vzIcQ-EdCEZT0odQkhSAVC-yppvFILC65cz3tXJsKikEn0bhWfeCiEHb31t-BR5DW4Xw7gIrB-CXbJ2QHggeBDwGXRsAYpsU8AAKnxvBCBMWQoGbi04yPEWMeRZDIHKLNtoyucCNFZiiTvHRso0HnwwT3G+Vi772P7unWaYj16kMhsEgpcjTEMKYVA1haiUEcO0FuHhcB-Y9ylrkuKfiinALGPgLECQKYEQiWGWu0TYFLHgZohJx8Yk4zPuYtJt8Mm2KydLHJU8GlzxQQvAmTYia5y8DQ+4AzS6IMSVM-4Yz4lDJOSM62fN0Hty4QswO98QZSOzlQtkBpiBGgIKAew3BQC+jNHQV01xgAUAyiJQgbxRLwkEoqDIbAUosEMAcOIwFQD+F0N9FaWLGjqD1NofOCwGCGFQMKFxoAEL8CBt2USehuAqEjjMOKHiNRmimEgIQlCNyNTGDAGCHlWV0HZcCYwXSelIEMOoNA5Kmw0shfSlgKhppuGMDADYyhDCGHKoJRq8Luk4mMESwwAAifAHAciiQAIQmrcFNEIdrwgEplU4By50yVOApVShsIRdwQtEjSOkZICLqk1GtIkvoIVjFAEC30WAOriSOHQBWFEsjTV3JG4S0aXwYtWtivNwQc3AhhYwBpUhc1YuME-La3ApXfJsGa94UoTVAw7NaBtxbQSMBNSqwtpFYQloYDQTKhBpCdvhA04w-r8B9ttOOxgABNJACBy2VAHV2odI7DCYqcI6otcJGBpn2CgaQa7oUbuHZC7VgRSBgAACQAFF5DIE4A+lgGoWBkH3YOh9ZoPxOCwMsMdB6GCToMhBeqRIPXfU6tBilJqvwfhNU60IjqyA7pYEaseCA61bhNfC5UTgW2NnbaAE1qsLAfhxPgHtDqb2DEfc+jWMA30fooBhsVsiwkEVetKvDBGNQshYMRttzYyM7EtPSAitHjYmpooBeiSBkOqvk3RYCSQOP51hjhvjKQO1NpyCJps+nB20dVUSuwprEPEZNbS-AiqVC2uCJp7DuG9NkYE2G4TrbjPiaDZTMzxhY1ICwM5vNnGDW9KtpTNzyAG2eaE0Z0jJqJOkgCyqqddVJVEmC-G3ViauAQjYEgFDdH2Phb2SQ2LYnG2SkMz55L86GBmeCEAA
