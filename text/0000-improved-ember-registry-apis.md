@@ -253,7 +253,7 @@ interface Owner {
 }
 ```
 
-This has the advantage of being a smaller diff from today's world (and fewer characters to type):
+This has the advantage of being a smaller diff from today’s world, and cutting down on the extra typing of the new API design:
 
 ```diff
 - lookup('service:foo')
@@ -271,7 +271,7 @@ This is a less flexible proposal, and—more importantly—it has a significant 
 
 ### String-based API as “sugar”
 
-While we prefer to have the object-based API as the *primary* API, we could supply the string-based API outlined above for the simple and most common case, so that this—
+While this RFC recommends the object-based API as the *primary* API, we could supply the string-based API outlined above for the simple and most common case, so that this—
 
 ```js
 lookup('service', 'foo')
@@ -283,7 +283,7 @@ lookup('service', 'foo')
 lookup({ type: 'service', name: 'foo'})
 ```
 
-This could be nice from an ergonomics perspective, and introduces only a small amount of extra complexity in the implementation: the resolver schema still clearly distinguishes between the `lookup('<type>:<name>')` form and `lookup(type, name)`. However, it does require introspection on the arguments passed to the functions.
+This could be nice from an ergonomics perspective, and introduces only a small amount of extra complexity in the implementation: the resolver `schemaVersion` key still allows the implementation to distinguish between the `lookup('<type>:<name>')` form and the `lookup(type, name)` form. However, it does require introspection on the arguments passed to the functions.
 
 ### Object-based API
 
