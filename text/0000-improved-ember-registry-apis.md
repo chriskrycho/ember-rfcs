@@ -101,6 +101,10 @@ type Resolver = ResolverV0 | ResolverV1;
 
 The other registry API changes may also be implemented in terms of the new resolver `schemaVersion` check.
 
+This design is completely backwards compatible: it continues working exactly as it does today, with users opting *into* the change by upgrading their version of `ember-resolver`, which will implement the new design proposed by this RFC as a breaking change.
+
+There is also some prior art for this kind of schema versioning: [a similar “stamp”](https://github.com/emberjs/ember.js/pull/9994) was used for accomodating different behaviors when using the modules-based resolver vs. not (back in 2014)!
+
 ### Owner APIs
 
 The owner APIs all change to use `Identifier` or `FactoryTypeIdentifier` instead of strings. 
