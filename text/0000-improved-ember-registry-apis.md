@@ -237,11 +237,9 @@ users?
 
 ## Drawbacks
 
-> Why should we *not* do this? Please consider the impact on teaching Ember,
-on the integration of this feature with other existing and planned features,
-on the impact of the API churn on existing apps, etc.
+- The existing APIs have served Ember well for a long time. Introducing any new change involves some risk, particularly in areas so core to how Ember behaves.
 
-> There are tradeoffs to choosing any path, please attempt to identify them here.
+- The proposed API here trades away brevity in favor of clarity, tooling support, and being “normal” JavaScript. `'service:session'` is many fewer characters to type than `{ type: 'service', name: 'session' }`.
 
 ## Alternatives
 
