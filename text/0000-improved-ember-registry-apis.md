@@ -326,9 +326,20 @@ Leaving the API as it is remains an option, with both the upsides and downsides 
 
 ## Unresolved questions
 
-- What is the right name for the parameter and interface for the lookup? `identifier` is a reasonable choice, but does overlap with the notion of identifiers from Ember Data. It is also *quite* generic. We could use the longer but perhaps clearer `RegistrationIdentifier` or `RegistryIdentifier` or perhaps `RegistryId` for the type when discussing it.
+- What is the right name for the parameter and interface for the lookup? `identifier` is a reasonable choice, but does overlap with the notion of identifiers from Ember Data. It is also *quite* generic. We could use any of a number of longer but perhaps clearer names:
+    - `RegistrationIdentifier`
+    - `RegistryIdentifier`
+    - `FactoryIdentifier`
+    - `RegistryId`
 
-- Similarly, is `FactoryTypeIdentifier` the correct name? Should we use `FactoryIdentifier`, `FactoryRegistrationIdentifier`, `FactoryRegistryId`, etc. instead?
+- Similarly, is `FactoryTypeIdentifier` the correct name? Alternatives might be:
+    - `FactoryRegistrationIdentifier`
+    - `FactoryTypeRegistrationIdentifier`
+    - `FactoryRegistryIdentifier`
+    - `FactoryTypeRegistryIdentifier`
+    - `FactoryIdentifier` (mutually exclusive with using it as a replacement for `Identifier`
+    - `FactoryRegistryId`
+    - `FactoryTypeRegistryId`
 
 - Are `identifier` and `type` the right names for the arguments in the new design?
 
