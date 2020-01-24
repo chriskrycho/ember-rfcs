@@ -265,6 +265,22 @@ interface Owner {
 
 #### `Owner.registeredOption`
 
+The `registeredOption` method is currently defined as:
+
+```ts
+interface Owner {
+  registeredOption(fullName: string, optionName: string): RegisterOptions;
+}
+```
+
+This will be updated to use an [`Identifier`](#identifier) instead of a string:
+
+```ts
+interface Owner {
+  registeredOption(identifier: Identifier, optionName: string): RegisterOptions;
+}
+```
+
 #### `Owner.registeredOptions`
 
 #### `Owner.registeredOptionsForType`
