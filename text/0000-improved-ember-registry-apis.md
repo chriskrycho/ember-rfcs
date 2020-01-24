@@ -368,7 +368,7 @@ The Typed Ember blueprints generate that boilerplate for users, which (hopefully
   
 + declare module 'TBD-some-registry-spot' {
 +   interface Registry {
-+     'service:session': Session;
++     'service:session': typeof Session;
 +   }
 + }
 ```
