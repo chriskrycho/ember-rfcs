@@ -11,10 +11,68 @@ Introduce a new, object-based API for all registry APIs; deprecate the current s
 
 ## Motivation
 
-> Why are we doing this? What use cases does it support? What is the expected
-outcome?
+There are two primary motivations here: replacing the string-based microsyntax with an idiomatic JavaScript API, and making the API more amenable to correct types for TypeScript users.
 
-Additionally, there may be some very small performance wins here, since in this schema there is no need to parse a string. This is not considered to be a significant motivator, however, since the tradeoffs between object allocation (memory utilization) and string parsing (CPU utilization) are likely to be largely irrelevant in practice for this API.
+### Microsyntax
+
+The current design has worked well enough for a long time, but it adds conceptual overhead to learning how to use Ember. JavaScript has a lightweight and easy way of defining sets of related data: plain old JavaScript objects. By contrast, the existence of this Ember-specific microsyntax requires users to learn a new concept and internalize how it works when they first encounter the registry APIs.
+
+This need often comes relatively early in the learning process: the first time a user needs to write a unit test for a service. We currently devote [an entire section of the guides](https://guides.emberjs.com/release/applications/dependency-injection/#toc_factory-registrations) to explaining how factory registrations work, including a paragraph devoted to explaining the microsyntax. A normal JavaScript API would simplify this entire section.
+
+### TypeScript users
+
+For TypeScript users, the current API is not type-safe, and can be made so only with considerable extra work by developers. While the Typed Ember team has made it possible for string-keyed lookups to work in general—so that, for example, `store.findRecord('bar')` correctly has the return type `Bar | undefined`, and will warn users if they try to look up a model which is not actually in the store—this comes with some overhead for the developer for each service, controller, Ember Data model, etc.
+
+In order to have safe type lookup with the microsyntax, this effort would have to *double*.
+
+For example, to make service lookups work with the classic API, users had to write this (noting that we *generate* the boilerplate for them):
+
+```ts
+import Service from '@ember/service';
+
+export default class Session extends Service {
+  login(email: string, password: string) {
+    // ...
+  }
+  
+  logout() {
+    // ...
+  }
+}
+
+declare module '@ember/service' {
+  interface Registry {
+    session: Session;
+  }
+}
+```
+
+Using that in a classic class:
+
+```ts
+import Component from '@ember/component';
+import { inject as service } from '@ember/service';
+
+export default Component.extend({
+  session: service('session'), // type: `Session`
+})
+```
+
+To make this work for e.g. the `lookup` API, though, users would have to add this to the bottom of the file:
+
+```ts
+declare module 'TBD-some-registry-spot' {
+  interface Registry {
+    'service:session': Session;
+  }
+}
+```
+
+This *works*, but is additional boilerplate… which can be avoided by a better API. With the new design proposed by this RFC, users would still need *one* bit of boilerplate in their files, but the types for `lookup` and other registry APIs can be extended in a way transparent to users so that they “just work” with *zero* additional effort. (For details, see [**Appendix: TypeScript**](#appendix-type-script).)
+
+### Performance?
+
+Finally, there *may* be some very small performance wins here, since in this schema there is no need to parse a string. This is not considered to be a significant motivator, however, since the tradeoffs between object allocation (memory utilization) and string parsing (CPU utilization) are likely to be largely irrelevant in practice for this API.
 
 ## Detailed design
 
