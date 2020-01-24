@@ -208,7 +208,19 @@ All existing microsyntax invocations can be straightforwardly migrated to the ne
 
 ### Deprecation
 
-<!-- TODO: deprecation message about the v1 resolver -->
+Invocation of v0 resolver APIs which require an `Identifier` will trigger the following deprecation message (using `lookup` as an example):
+
+> You invoked `Owner.lookup` with a `string` full name: `'<type>:<name>'`. This usage is deprecated and will be removed in Ember 4.0. Instead, pass an object identifier: `{ type: '<type>', name: '<name>' }`.
+
+Here, the message should substittue the *actual* passed type and name. For example, if the user tried to look up a service named `session` by invoking `lookup('service:session')` the deprecation will read:
+
+> You invoked `Owner.lookup` with a string full name: `'service:session'`. This usage is deprecated and will be removed in Ember 4.0. Instead, pass an identifier object: `{ type: 'service', name: 'session' }`.
+
+For methods which require a `FactoryTypeIdentifier`, the wording is adjusted appropriately:
+
+> You invoked `Owner.lookup` with a string type name: `'service'`. This usage is deprecated and will be removed in Ember 4.0. Instead, pass a factory type identifier object: `{ type: 'service' }`.
+
+Methods which support either `Identifier`s or `FactoryTypeIdentifier`s should display the appropriate variant of the message according to what the user actually supplied.
 
 ## How we teach this
 
