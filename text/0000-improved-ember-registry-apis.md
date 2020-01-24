@@ -109,3 +109,33 @@ Implementer concerns should not be *primary*, but they are important, and here t
 
 - What is the right name for the parameter and interface for the lookup? `identifier` is a reasonable choice, but does overlap with the notion of identifiers from Ember Data.
 
+## Appendix: TypeScript
+
+This design is motivated in part by a desire for the API to better support type-safe TypeScript usage. If we were to ship this, we would accompany it with the following types at DefinitelyTyped:
+
+```ts
+interface TypeRegistry {
+  service: ServiceRegistry;
+  controller: ControllerRegistry;
+}
+
+interface LookupOptions {
+  singleton?: boolean;
+}
+
+interface Identifier<
+  Type extends keyof TypeRegistry,
+  Name extends keyof TypeRegistry[Type],
+> {
+  type: Type;
+  name: Name;
+  namespace?: string;
+}
+
+interface Owner {
+  lookup<
+    Type extends keyof TypeRegistry,
+    Name extends keyof TypeRegistry[Type],
+  >(identifier: Identifier<Type, Name>, options?: Options): TypeRegistry[Type][Name];
+}
+```
