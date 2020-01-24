@@ -293,6 +293,9 @@ interface Owner {
 
 All existing microsyntax invocations can be straightforwardly migrated to the new syntax with a codemod.
 
+### Deprecation
+
+<!-- TODO: deprecation message about the v1 resolver -->
 
 ## How we teach this
 
