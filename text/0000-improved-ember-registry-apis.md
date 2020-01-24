@@ -99,6 +99,32 @@ The following APIs are all present on “owners”, e.g. `EngineInstance`, `Appl
 
 #### `Owner.inject`
 
+The `inject` function is currently defined as:
+
+```ts
+interface Owner {
+  inject(factoryNameOrType: string, property: string, injectionName: string): void;
+}
+```
+
+This will be updated to use [`Identifiers`](#identifier) instead of a strings:
+
+```ts
+interface FactoryTypeIdentifier {
+  type: string;
+}
+
+interface Owner {
+  inject(
+    factory: Identifier | FactoryTypeIdentifier,
+    property: string,
+    injection: Identifier
+  ): void;
+}
+```
+
+We introduce `FactoryTypeIdentifier` to distinguish between injections for *all factories of a given type* (`FactoryTypeIdentifier`) and *specific factories* (`Identifier`). As is the case in the microsyntax-based design, injections for all factories of a given type may not be namespaced.
+
 #### `Owner.lookup`
 
 The `lookup` function is currently defined as:
