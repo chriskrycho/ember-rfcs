@@ -136,6 +136,24 @@ interface Owner {
 
 #### `Owner.hasRegistration`
 
+The `hasRegistration` method is currently defined as:
+
+```ts
+interface Owner {
+  hasRegistration(fullName: string): boolean;
+}
+```
+
+This will be updated to use an [`Identifier`](#identifier) instead of a string:
+
+```ts
+interface Owner {
+  hasRegistration(identifier: Identifier): boolean;
+}
+```
+
+For the purposes of registration lookup, we use object value equality, *not* object identity.
+
 #### `Owner.inject`
 
 The `inject` method is currently defined as:
