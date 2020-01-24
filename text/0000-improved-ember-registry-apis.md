@@ -121,6 +121,17 @@ interface RegisterOptions {
 }
 ```
 
+Throughout, for the purposes of registration lookup, we use deep object value equality, *not* object identity. This specifically applies to:
+
+- `Owner.factoryFor`
+- `Owner.lookup`
+- `Owner.registerOptions`
+- `Owner.registerOptionsForType`
+- `Owner.registeredOption`
+- `Owner.registeredOptions`
+- `Owner.registeredOptionsForType`
+- `Owner.resolveRegistration`
+
 #### `Owner.factoryFor`
 
 The `factoryFor` method is currenty defined as:
@@ -166,8 +177,6 @@ interface Owner {
   hasRegistration(identifier: Identifier): boolean;
 }
 ```
-
-For the purposes of registration lookup, we use object value equality, *not* object identity.
 
 #### `Owner.inject`
 
