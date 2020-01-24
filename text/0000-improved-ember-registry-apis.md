@@ -247,7 +247,21 @@ interface Owner {
 
 #### `Owner.registerOptionsForType`
 
-#### `Owner.registerOptionsForType`
+The `registerOptionsForType` method is currently defined as:
+
+```ts
+interface Owner {
+  registerOptionsForType(fullName: string, options: RegisterOptions): void;
+}
+```
+
+This will be updated to use a [`FactoryTypeIdentifier`](#identifier) instead of a string, with `RegisterOptions` unchanged:
+
+```ts
+interface Owner {
+  registerOptionsForType(identifier: FactoryTypeIdentifier, options: RegisterOptions): any;
+}
+```
 
 #### `Owner.registeredOption`
 
