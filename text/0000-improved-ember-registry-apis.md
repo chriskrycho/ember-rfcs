@@ -289,6 +289,10 @@ interface Owner {
 
 #### `Owner.unregister`
 
+### Codemod
+
+All existing microsyntax invocations can be straightforwardly migrated to the new syntax with a codemod.
+
 
 ## How we teach this
 
