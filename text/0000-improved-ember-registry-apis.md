@@ -310,6 +310,22 @@ interface Owner {
 
 #### `Owner.registeredOptionsForType`
 
+The `registeredOptionsForType` method is currently defined as:
+
+```ts
+interface Owner {
+  registeredOptionsForType(type: string): RegisterOptions;
+}
+```
+
+This will be updated to use an [`Identifier`](#identifier) instead of a string:
+
+```ts
+interface Owner {
+  registeredOptionsForType(type: FactoryTypeIdentifier): RegisterOptions;
+}
+```
+
 #### `Owner.resolveRegistration`
 
 #### `Owner.unregister`
