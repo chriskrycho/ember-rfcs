@@ -89,7 +89,7 @@ type Resolver = ResolverV0 | ResolverV1;
 
 The other registry API changes may also be implemented in terms of the new resolver `schemaVersion` check.
 
-#### Owner APIs
+### Owner APIs
 
 The following APIs are all present on “owners”, e.g. `EngineInstance`, `ApplicationInstance`, etc. They are presented here in alphabetical order for convenience.
 
