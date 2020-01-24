@@ -389,9 +389,6 @@ export interface LookupOptions {
   namespace?: string;
 }
 
-type Class<T extends {} = {}, Args extends unknown[] = unknown[]> =
-  new (...args: Args) => T;
-
 interface FactoryManager<T extends {} = {}> {
   class: new (...args: unknown[]) => T;
   create(initialValues?: {
