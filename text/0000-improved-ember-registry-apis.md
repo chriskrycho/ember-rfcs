@@ -254,7 +254,7 @@ Changes to `ember-resolver` will be introduced in a major version, signaling cle
 
 - The existing APIs have served Ember well for a long time. Introducing any new change involves some risk, particularly in areas so core to how Ember behaves.
 
-- The proposed API here trades away brevity in favor of clarity, tooling support, and being “normal” JavaScript. `'service:session'` is many fewer characters to type than `{ type: 'service', name: 'session' }`.
+- The proposed API here deprioritizes brevity in favor of clarity, readability, maintainability, tooling support, and being “normal” JavaScript. `'service:session'` is many fewer characters to type than `{ type: 'service', name: 'session' }`. (While many people highly value brevity and we should avoid overly verbose APIs, long experience suggests that *reading* and *changing* are more important than *first writing* code.)
 
 ## Alternatives
 
