@@ -98,7 +98,7 @@ To make this work for e.g. the `lookup` API, though, users would have to add *an
 + }
 ```
 
-This *works*, but is additional boilerplate… which can be avoided by a better API. With the new design proposed by this RFC, users would still need *one* bit of boilerplate in their files, but the types for `lookup` and other registry APIs can be extended in a way transparent to users so that they “just work” with *zero* additional effort. (For details, see [**Appendix: TypeScript**](#appendix-type-script).)
+This *works*, but is additional boilerplate and, more importantly, *duplication*. Both can be avoided by a better API design. With the new design proposed by this RFC, users would still need *one* bit of boilerplate in their files, but the types for `lookup` and other registry APIs can be extended in a way transparent to users so that they “just work” with *zero* additional effort. (For details, see [**Appendix: TypeScript**](#appendix-type-script).)
 
 ### Performance?
 
