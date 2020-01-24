@@ -132,16 +132,35 @@ Throughout, for the purposes of registration lookup, we use deep object value eq
 - `Owner.registeredOptionsForType`
 - `Owner.resolveRegistration`
 
+Some APIs refer to *factories* and *factory managers*. The API for these classes is the same as it was previously, with the exception that the `fullName` and `normalizedNames` are deprecated:
+
+```ts
+interface FactoryClass {
+  positionalParams?: string | string[] | undefined | null;
+}
+
+interface Factory<T, C extends FactoryClass | object = FactoryClass> {
+  class?: C;
+  fullName?: string; // DEPRECATED
+  normalizedName?: string; // DEPRECATED
+  create(props?: { [prop: string]: any }): T;
+}
+
+interface FactoryManager<T = object> {
+  readonly class: Factory<T>;
+  readonly fullName?: string; // DEPRECATED
+  readonly normalizedName?: string; // DEPRECATED
+  create(props?: object): T;
+}
+```
+
+**TODO: nail down what here is public API during RFC discussion.**
+
 #### `Owner.factoryFor`
 
 The `factoryFor` method is currenty defined as:
 
 ```ts
-interface FactoryManager<T = object> {
-  class: typeof T;
-  create(): T;
-}
-
 interface Owner {
   factoryFor(fullName: string, options: LookupOptions): FactoryManager;
 }
@@ -150,11 +169,6 @@ interface Owner {
 This will be updated to use [`Identifiers`](#identifier) instead of strings:
 
 ```ts
-interface FactoryManager {
-  class: object; // the registered or resolved class
-  create(): object; // returns an instance of the class
-}
-
 interface Owner {
   factoryFor(identifier: Identifier, options: LookupOptions): FactoryManager;
 }
@@ -331,10 +345,6 @@ interface Owner {
 The `resolveRegistration` method is currently defined as:
 
 ```ts
-interface Factory<T> {
-  create(props?: object): T;
-}
-
 interface Owner {
   resolveRegistration(type: string): Factory;
 }
@@ -343,10 +353,6 @@ interface Owner {
 This will be updated to use an [`Identifier`](#identifier) instead of a string:
 
 ```ts
-interface Factory {
-  create(props?: object): object;
-}
-
 interface Owner {
   resolveRegistration(identifier: Identifier): Factory;
 }
@@ -546,7 +552,7 @@ export interface LookupOptions {
 
 interface FactoryManager<T extends {} = {}> {
   class: new (...args: unknown[]) => T;
-  create(initialValues?: {
+  create(props?: {
     [K in keyof T]?: T[K]
   }): T;
 }
