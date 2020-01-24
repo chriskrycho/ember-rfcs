@@ -224,16 +224,15 @@ Methods which support either `Identifier`s or `FactoryTypeIdentifier`s should di
 
 ## How we teach this
 
-> What names and terminology work best for these concepts and why? How is this
-idea best presented? As a continuation of existing Ember patterns, or as a
-wholly new one?
+- `Identifier` and `RecordTypeIdentifier` capture the concepts, in context, as succintly as possible. Alternatives considered to date are longer and more unwieldy. (However, see [**Unresolved Questions**](#unresolved-questions): there may be other names which work better.)
 
-> Would the acceptance of this proposal mean the Ember guides must be
-re-organized or altered? Does it change how Ember is taught to new users
-at any level?
+- The existing documentation about dependency injection can largely remain unchanged—mostly, it can be simplified in certain key areas. Paragraphs explaining the microsyntax can be eliminated or simplified by showing the identifier object type. New Ember users will continue to benefit from the detailed introduction to the concepts in the guides, but will have one fewer concept to learn along the way.
 
-> How should this feature be introduced and taught to existing Ember
-users?
+- All instances of the API documentation will need to be updated to reflect the changes to their signatures.
+
+- The deprecation message must be added to Ember’s deprecation page and tooling.
+
+- For the duration of Ember 3.x releases, the Guides and API docs will need explanations of the previous, deprecated APIs. These explanations should be brief, focused on how to migrate away from them preferably via the supplied codemod, rather than diving into the details of how the legacy system worked.
 
 ## Drawbacks
 
