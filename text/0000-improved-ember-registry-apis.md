@@ -33,72 +33,7 @@ This need often comes relatively early in the learning process: the first time a
 
 ### TypeScript users
 
-For TypeScript users, the current API is not type-safe, and can be made so only with considerable extra work by developers. While the Typed Ember team has made it possible for string-keyed lookups to work in general—so that, for example, `store.findRecord('bar')` correctly has the return type `Bar | undefined`, and will warn users if they try to look up a model which is not actually in the store—this comes with some overhead for the developer for each service, controller, Ember Data model, etc.
-
-In order to have safe type lookup with the microsyntax, this effort would have to *double*.
-
-For example, to make service lookups work with the classic API, users had to write this (noting that we *generate* the boilerplate for them):
-
-```ts
-import Service from '@ember/service';
-
-export default class Session extends Service {
-  login(email: string, password: string) {
-    // ...
-  }
-  
-  logout() {
-    // ...
-  }
-}
-
-declare module '@ember/service' {
-  interface Registry {
-    session: Session;
-  }
-}
-```
-
-Using that in a classic class:
-
-```ts
-import Component from '@ember/component';
-import { inject as service } from '@ember/service';
-
-export default Component.extend({
-  session: service('session'), // type: `Session`
-})
-```
-
-To make this work for e.g. the `lookup` API, though, users would have to add *another* declaration to the bottom of the file (which, again, could be generated, but is very annoying):
-
-```diff
-  import Service from '@ember/service';
-  
-  export default class Session extends Service {
-    login(email: string, password: string) {
-      // ...
-    }
-    
-    logout() {
-      // ...
-    }
-  }
-  
-  declare module '@ember/service' {
-    interface Registry {
-      session: Session;
-    }
-  }
-  
-+ declare module 'TBD-some-registry-spot' {
-+   interface Registry {
-+     'service:session': Session;
-+   }
-+ }
-```
-
-This *works*, but is additional boilerplate and, more importantly, *duplication*. Both can be avoided by a better API design. With the new design proposed by this RFC, users would still need *one* bit of boilerplate in their files, but the types for `lookup` and other registry APIs can be extended in a way transparent to users so that they “just work” with *zero* additional effort. (For details, see [**Appendix: TypeScript**](#appendix-type-script).)
+For TypeScript users, the current API is not type-safe, and can be made so only with considerable extra work by developers and the Typed Ember maintainers. Blueprint maintenance and end users’ mental overhead associated with existing solutions for Ember’s stringly-typed APIs would effectively have to *double* to provide type safety for today’s registry APIs. For details, see [**Appendix: Typescript - TypeScript Motivation**](#type-script-motivation).
 
 ### Performance?
 
@@ -201,7 +136,78 @@ Implementer concerns should not be *primary*, but they are important, and here t
 
 ## Appendix: TypeScript
 
-This design is motivated in part by a desire for the API to better support type-safe TypeScript usage. If we were to ship this, we would accompany it with the following types at DefinitelyTyped:
+This design is motivated in part by a desire for the API to better support type-safe TypeScript usage. This appendix explains the motivation and design as it impacts the declarations maintained by the Typed Ember team.
+
+### TypeScript motivation
+
+The type definitions for Ember currently make use of a pattern we call a “type registry”: a mapping of *strings* to *types*. This allows the types to safely represent string-based lookups like `story.findRecord('some-model')` or `service('session')`.
+
+For example, to make service lookups work with the classic API, users had to write something like this:
+
+```ts
+import Service from '@ember/service';
+
+export default class Session extends Service {
+  login(email: string, password: string) {
+    // ...
+  }
+  
+  logout() {
+    // ...
+  }
+}
+
+declare module '@ember/service' {
+  interface Registry {
+    session: Session;
+  }
+}
+```
+
+Then, users could write fairly idiomatic Ember and have the types resolve correctly:
+
+```ts
+import Component from '@ember/component';
+import { inject as service } from '@ember/service';
+
+export default Component.extend({
+  session: service('session'), // type: `Session`
+})
+```
+
+The Typed Ember blueprints generate that boilerplate for users, which (hopefully) minimizes the pain of working with these definitions. However, to make this work for the registry APIs, users (and therefore the blueprints) would have to add *another* declaration to the bottom of the file:
+
+```diff
+  import Service from '@ember/service';
+  
+  export default class Session extends Service {
+    login(email: string, password: string) {
+      // ...
+    }
+    
+    logout() {
+      // ...
+    }
+  }
+  
+  declare module '@ember/service' {
+    interface Registry {
+      session: Session;
+    }
+  }
+  
++ declare module 'TBD-some-registry-spot' {
++   interface Registry {
++     'service:session': Session;
++   }
++ }
+```
+
+This *works*, but is additional boilerplate and, more importantly, *duplication of information*, which can get out of sync. Both of these problems are avoided by the new design proposed by this RFC. With the new design, users would still need the same boilerplate required today, but the types for `lookup` and other registry APIs can be extended in a way transparent to users so that they “just work” with *zero* additional effort, as covered in the next section.
+
+### Proposed type definitions
+
+If we were to ship this, we would accompany it with the following types at DefinitelyTyped:
 
 ```ts
 interface TypeRegistry {
