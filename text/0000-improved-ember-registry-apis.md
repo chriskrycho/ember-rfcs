@@ -61,7 +61,7 @@ interface Identifier {
 
 Here the `type` corresponds to the prefix component of the legacy API, and `name` to the postfix component of the legacy API: `service:foo` becomes `{ type: 'service', name: 'foo' }`.
 
-The `namespace` field allows for identifiers to be restricted to a particular namespace, as in for example tools which namespace lookups for addons (e.g. [ember-holy-futuristic-template-namespacing-batman](https://github.com/rwjblue/ember-holy-futuristic-template-namespacing-batman)). It is optional since it is not required in normal usage.
+The `namespace` field allows for identifiers to be restricted to a particular namespace, as in for example tools which namespace lookups for addons (e.g. [ember-holy-futuristic-template-namespacing-batman](https://github.com/rwjblue/ember-holy-futuristic-template-namespacing-batman)). It is optional since it is not required in normal usage, as is the case in the microsyntax today, where it may be provided via a prefix and delimited with `@`: `<namespace>@<type>:<name>`.
 
 We also introduce `FactoryTypeIdentifier` to distinguish between injections for *all factories of a given type* (`FactoryTypeIdentifier`) and *specific factories* (`Identifier`):
 
