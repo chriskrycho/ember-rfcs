@@ -101,6 +101,30 @@ The following APIs are all present on “owners”, e.g. `EngineInstance`, `Appl
 
 #### `Owner.lookup`
 
+The `lookup` function is currently defined as:
+
+```ts
+interface LookupOptions {
+  singleton?: boolean;
+}
+
+interface Owner {
+  lookup(fullName: string, options?: LookupOptions): any;
+}
+```
+
+This will be updated to use an [`Identifier`](#identifier) instead of a string:
+
+```ts
+interface LookupOptions {
+  singleton?: boolean;
+}
+
+interface Owner {
+  lookup(identifier: Identifier, options?: LookupOptions): any;
+}
+```
+
 #### `Owner.register`
 
 #### `Owner.registerOptionsForType`
