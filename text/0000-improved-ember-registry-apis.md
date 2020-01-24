@@ -228,15 +228,15 @@ Methods which support either `Identifier`s or `FactoryTypeIdentifier`s should di
 
 ### Rollout
 
-The rollout will be phased:
+The rollout will be phased. For both Ember’s `Resolver` API and the default resolver supplied with `ember-resolver`:
 
 - The new API will be introduced in a minor release as normal, *without* introducing the deprecation warning for the microsyntax-based design, and *including* the two codemods required for this API change: one for all Ember users, and one for TypeScript users (see [**Proposed Type Definitions**](#proposed-type-definitions) in the [**TypeScript Appendix**](#appendix-typescript) below.)
 
 - After *at least* one minor version, the deprecation message will be introduced. This will give addons time to adopt the new API *before* requiring 
 
-- We will supply a polyfill for the new behavior, supporting *at least* the current LTS. The behavior here can be polyfilled to many if not all existing LTS releases; we would likely limit this slightly, but would support *many* LTS releases.
+For Ember only:
 
-Changes to `ember-resolver` will be introduced in a major version, signaling clearly to users that there is a breaking change inbound.
+- We will supply a polyfill for the new behavior, supporting *at least* the current LTS. The behavior here can be polyfilled to many if not all existing LTS releases; we would likely limit this slightly, but would support *many* LTS releases.
 
 ## How we teach this
 
