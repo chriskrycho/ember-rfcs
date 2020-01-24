@@ -61,6 +61,16 @@ Here the `type` corresponds to the prefix component of the legacy API, and `name
 
 The `namespace` field allows for identifiers to be restricted to a particular namespace, as in for example tools which namespace lookups for addons (e.g. [ember-holy-futuristic-template-namespacing-batman](https://github.com/rwjblue/ember-holy-futuristic-template-namespacing-batman)). It is optional since it is not required in normal usage.
 
+We also introduce `FactoryTypeIdentifier` to distinguish between injections for *all factories of a given type* (`FactoryTypeIdentifier`) and *specific factories* (`Identifier`):
+
+```ts
+interface FactoryTypeIdentifier {
+  type: string;
+}
+```
+
+As is the case in the microsyntax-based design, these factory type injections may not be namespaced.
+
 ### `Resolver`
 
 Ember’s `Resolver` function is public API, designed to be customized and overridden. To support backwards compatibility with existing custom resolvers, we introduce a `schemaVersion` key to the `Resolver` API, which may be `undefined` or an integer value. If `schemaVersion` is `undefined` or `0`, the legacy behavior of the resolver is maintained:
@@ -172,10 +182,6 @@ interface Owner {
 This will be updated to use [`Identifiers`](#identifier) instead of a strings:
 
 ```ts
-interface FactoryTypeIdentifier {
-  type: string;
-}
-
 interface Owner {
   inject(
     factory: Identifier | FactoryTypeIdentifier,
@@ -184,8 +190,6 @@ interface Owner {
   ): void;
 }
 ```
-
-We introduce `FactoryTypeIdentifier` to distinguish between injections for *all factories of a given type* (`FactoryTypeIdentifier`) and *specific factories* (`Identifier`). As is the case in the microsyntax-based design, injections for all factories of a given type may not be namespaced.
 
 #### `Owner.lookup`
 
