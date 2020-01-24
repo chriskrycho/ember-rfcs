@@ -93,7 +93,7 @@ The other registry API changes may also be implemented in terms of the new resol
 
 The following APIs are all present on “owners”, e.g. `EngineInstance`, `ApplicationInstance`, etc. They are presented here in alphabetical order for convenience.
 
-_**Note:** In several API definitions below, we reference the `LookupOptions` type, already used internally within Ember and referenced (though never in complete form):_
+_**Note:** In several API definitions below, we reference the following types:_
 
 ```ts
 export interface LookupOptions {
@@ -101,6 +101,11 @@ export interface LookupOptions {
   instantiate?: boolean;
   source?: string;
   namespace?: string;
+}
+
+interface RegisterOptions {
+  singleton?: boolean;
+  instantiate?: boolean;
 }
 ```
 
@@ -205,11 +210,6 @@ interface Owner {
 The `register` method is currently defined as:
 
 ```ts
-interface RegisterOptions {
-  singleton?: boolean;
-  instantiate?: boolean;
-}
-
 interface Owner {
   register(fullName: string, factory: any, options?: RegisterOptions): void;
 }
@@ -228,11 +228,6 @@ interface Owner {
 The `registerOptions` method is currently defined as:
 
 ```ts
-interface RegisterOptions {
-  singleton?: boolean;
-  instantiate?: boolean;
-}
-
 interface Owner {
   registerOptions(fullName: string, options: RegisterOptions): void;
 }
