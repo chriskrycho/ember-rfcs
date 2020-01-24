@@ -326,7 +326,7 @@ Leaving the API as it is remains an option, with both the upsides and downsides 
 
 ## Appendix: TypeScript
 
-This design is motivated in part by a desire for the API to better support type-safe TypeScript usage. This appendix explains the motivation and design as it impacts the declarations maintained by the Typed Ember team.
+This design is motivated in part by a desire for the API to better support type-safe TypeScript usage. This appendix explains the motivation and design as it impacts the declarations maintained by the Typed Ember team. The big idea here is to make registry lookups type-safe, including support for autocomplete and refactoring, while not making the boilerplate situation *worse* (eliminating it entirely is unfortunately not yet possible).
 
 ### TypeScript motivation
 
