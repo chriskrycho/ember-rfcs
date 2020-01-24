@@ -93,6 +93,17 @@ The other registry API changes may also be implemented in terms of the new resol
 
 The following APIs are all present on “owners”, e.g. `EngineInstance`, `ApplicationInstance`, etc. They are presented here in alphabetical order for convenience.
 
+_**Note:** In several API definitions below, we reference the `LookupOptions` type, already used internally within Ember and referenced (though never in complete form):_
+
+```ts
+export interface LookupOptions {
+  singleton?: boolean;
+  instantiate?: boolean;
+  source?: string;
+  namespace?: string;
+}
+```
+
 #### `Owner.factoryFor`
 
 #### `Owner.hasRegistration`
