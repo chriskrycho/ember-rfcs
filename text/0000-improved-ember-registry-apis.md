@@ -107,7 +107,7 @@ There is also some prior art for this kind of schema versioning: [a similar “s
 
 ### Owner APIs
 
-The owner APIs all change to use `Identifier` or `FactoryTypeIdentifier` instead of strings. 
+The owner APIs all change to use `Identifier` (or `FactoryTypeIdentifier` as appropriate) instead of strings. 
 
 Throughout, for the purposes of registration lookup, we use deep object value equality, *not* object identity. This specifically applies to:
 
