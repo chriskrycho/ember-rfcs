@@ -202,6 +202,27 @@ interface Owner {
 
 #### `Owner.register`
 
+The `register` method is currently defined as:
+
+```ts
+interface RegisterOptions {
+  singleton?: boolean;
+  instantiate?: boolean;
+}
+
+interface Owner {
+  register(fullName: string, factory: any, options?: RegisterOptions): void;
+}
+```
+
+This will be updated to use an [`Identifier`](#identifier) instead of a string, with `RegisterOptions` unchanged:
+
+```ts
+interface Owner {
+  register(identifier: Identifier, factory: any, options?: RegisterOptions): any;
+}
+```
+
 #### `Owner.registerOptionsForType`
 
 #### `Owner.registerOptionsForType`
