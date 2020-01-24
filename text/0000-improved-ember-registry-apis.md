@@ -360,6 +360,22 @@ interface Owner {
 
 #### `Owner.unregister`
 
+The `unregister` method is currently defined as:
+
+```ts
+interface Owner {
+  unregister(fullName: string): void;
+}
+```
+
+This will be updated to use an [`Identifier`](#identifier) instead of a string:
+
+```ts
+interface Owner {
+  unregister(identifier: Identifier): void;
+}
+```
+
 ### Codemod
 
 All existing microsyntax invocations can be straightforwardly migrated to the new syntax with a codemod.
