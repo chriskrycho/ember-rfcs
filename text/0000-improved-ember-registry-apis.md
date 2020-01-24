@@ -286,13 +286,13 @@ This could be nice from an ergonomics perspective, and introduces only a small a
 
 ### Object-based API
 
-For a syntax 
+Another brief syntax might use the type as the key and the name as its value:
 
 ```js
 lookup({ service: 'foo' })
 ```
 
-While this is nice from the perspective of the consumer of the API, it muddies the API substantially and makes implementation more complex and with much worse performance: the lookup would have to iterate over all keys on the object passed every time, mapping those keys to the *known* identifer interface and then checking the others against the registry.
+While this is nice from the perspective of the consumer of the API, it muddies the API substantially and makes implementation more complex and with much worse performance: the lookup would have to iterate over all keys on the object passed every time, mapping those keys to the *known* identifer interface and then checking the others against the registry. This also makes the TypeScript implementation considerably more difficult, for similar reasons to the runtime implementation, but at compile time.
 
 Implementer concerns should not be *primary*, but they are important, and here they have performance implications that, while not dramatic, can easily be avoided by other proposals.
 
