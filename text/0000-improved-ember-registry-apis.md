@@ -9,6 +9,18 @@
 
 Introduce a new, object-based API for all registry APIs; deprecate the current single-string-based registry APIs; and introduce a `schema` property to the resolver to safely support existing resolvers.
 
+Today the registry APIs are all of shapes roughly like this:
+
+```js
+getOwner(this).lookup('service:session');
+```
+
+This RFC proposes that they would instead be written like this:
+
+```js
+getOwner(this).lookup({ type: 'service', name: 'session' })
+```
+
 ## Motivation
 
 There are two primary motivations here: replacing the string-based microsyntax with an idiomatic JavaScript API, and making the API more amenable to correct types for TypeScript users.
