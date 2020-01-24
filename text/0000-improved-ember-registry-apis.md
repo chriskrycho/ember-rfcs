@@ -103,9 +103,22 @@ The other registry API changes may also be implemented in terms of the new resol
 
 ### Owner APIs
 
-The following APIs are all present on “owners”, e.g. `EngineInstance`, `ApplicationInstance`, etc. They are presented here in alphabetical order for convenience.
+The owner APIs all change to use `Identifier` or `FactoryTypeIdentifier` instead of strings. 
 
-_**Note:** In several API definitions below, we reference the following types:_
+Throughout, for the purposes of registration lookup, we use deep object value equality, *not* object identity. This specifically applies to:
+
+- `Owner.factoryFor`
+- `Owner.lookup`
+- `Owner.registerOptions`
+- `Owner.registerOptionsForType`
+- `Owner.registeredOption`
+- `Owner.registeredOptions`
+- `Owner.registeredOptionsForType`
+- `Owner.resolveRegistration`
+
+####  Options
+
+Some `Owner` registry APIs take lookup or registration options. This RFC does not propose changing these options in any way, but their definitions are provided here for completeness:
 
 ```ts
 export interface LookupOptions {
@@ -121,16 +134,7 @@ interface RegisterOptions {
 }
 ```
 
-Throughout, for the purposes of registration lookup, we use deep object value equality, *not* object identity. This specifically applies to:
-
-- `Owner.factoryFor`
-- `Owner.lookup`
-- `Owner.registerOptions`
-- `Owner.registerOptionsForType`
-- `Owner.registeredOption`
-- `Owner.registeredOptions`
-- `Owner.registeredOptionsForType`
-- `Owner.resolveRegistration`
+#### `Factory` and `FactoryManager`
 
 Some APIs refer to *factories* and *factory managers*. The API for these classes is the same as it was previously, with the exception that the `fullName` and `normalizedNames` are deprecated:
 
@@ -156,224 +160,46 @@ interface FactoryManager<T = object> {
 
 **TODO: nail down what here is public API during RFC discussion.**
 
-#### `Owner.factoryFor`
+#### `Owner` API diff
 
-The `factoryFor` method is currenty defined as:
+```diff
+ interface Owner {
+-  factoryFor(fullName: string, options: LookupOptions): FactoryManager;
++  factoryFor(identifier: Identifier, options: LookupOptions): FactoryManager;
 
-```ts
-interface Owner {
-  factoryFor(fullName: string, options: LookupOptions): FactoryManager;
-}
-```
+-  hasRegistration(fullName: string): boolean;
++  hasRegistration(identifier: Identifier): boolean;
 
-This will be updated to use [`Identifiers`](#identifier) instead of strings:
+-  inject(factoryNameOrType: string, property: string, injectionName: string): void;
++  inject(factory: Identifier | FactoryTypeIdentifier, property: string, injection: Identifier): void;
 
-```ts
-interface Owner {
-  factoryFor(identifier: Identifier, options: LookupOptions): FactoryManager;
-}
-```
+-  lookup(fullName: string, options?: LookupOptions): any;
++  lookup(identifier: Identifier, options?: LookupOptions): any;
 
-#### `Owner.hasRegistration`
+-  register(fullName: string, factory: any, options?: RegisterOptions): void;
++  register(identifier: Identifier, factory: any, options?: RegisterOptions): any;
 
-The `hasRegistration` method is currently defined as:
+-  registerOptions(fullName: string, options: RegisterOptions): void;
++  registerOptions(identifier: Identifier, options: RegisterOptions): any;
 
-```ts
-interface Owner {
-  hasRegistration(fullName: string): boolean;
-}
-```
+-  registerOptionsForType(fullName: string, options: RegisterOptions): void;
++  registerOptionsForType(identifier: FactoryTypeIdentifier, options: RegisterOptions): any;
 
-This will be updated to use an [`Identifier`](#identifier) instead of a string:
+-  registeredOption(fullName: string, optionName: string): RegisterOptions;
++  registeredOption(identifier: Identifier, optionName: string): RegisterOptions;
 
-```ts
-interface Owner {
-  hasRegistration(identifier: Identifier): boolean;
-}
-```
+-  registeredOptions(fullName: string): RegisterOptions;
++  registeredOptions(identifier: Identifier): RegisterOptions;
 
-#### `Owner.inject`
+-  registeredOptionsForType(type: string): RegisterOptions;
++  registeredOptionsForType(type: FactoryTypeIdentifier): RegisterOptions;
 
-The `inject` method is currently defined as:
+-  resolveRegistration(type: string): Factory;
++  resolveRegistration(identifier: Identifier): Factory;
 
-```ts
-interface Owner {
-  inject(factoryNameOrType: string, property: string, injectionName: string): void;
-}
-```
-
-This will be updated to use [`Identifiers`](#identifier) instead of a strings:
-
-```ts
-interface Owner {
-  inject(
-    factory: Identifier | FactoryTypeIdentifier,
-    property: string,
-    injection: Identifier
-  ): void;
-}
-```
-
-#### `Owner.lookup`
-
-The `lookup` method is currently defined as:
-
-```ts
-interface Owner {
-  lookup(fullName: string, options?: LookupOptions): any;
-}
-```
-
-This will be updated to use an [`Identifier`](#identifier) instead of a string:
-
-```ts
-interface Owner {
-  lookup(identifier: Identifier, options?: LookupOptions): any;
-}
-```
-
-#### `Owner.register`
-
-The `register` method is currently defined as:
-
-```ts
-interface Owner {
-  register(fullName: string, factory: any, options?: RegisterOptions): void;
-}
-```
-
-This will be updated to use an [`Identifier`](#identifier) instead of a string, with `RegisterOptions` unchanged:
-
-```ts
-interface Owner {
-  register(identifier: Identifier, factory: any, options?: RegisterOptions): any;
-}
-```
-
-#### `Owner.registerOptions`
-
-The `registerOptions` method is currently defined as:
-
-```ts
-interface Owner {
-  registerOptions(fullName: string, options: RegisterOptions): void;
-}
-```
-
-This will be updated to use an [`Identifier`](#identifier) instead of a string, with `RegisterOptions` unchanged:
-
-```ts
-interface Owner {
-  registerOptions(identifier: Identifier, options: RegisterOptions): any;
-}
-```
-
-#### `Owner.registerOptionsForType`
-
-The `registerOptionsForType` method is currently defined as:
-
-```ts
-interface Owner {
-  registerOptionsForType(fullName: string, options: RegisterOptions): void;
-}
-```
-
-This will be updated to use a [`FactoryTypeIdentifier`](#identifier) instead of a string, with `RegisterOptions` unchanged:
-
-```ts
-interface Owner {
-  registerOptionsForType(identifier: FactoryTypeIdentifier, options: RegisterOptions): any;
-}
-```
-
-#### `Owner.registeredOption`
-
-The `registeredOption` method is currently defined as:
-
-```ts
-interface Owner {
-  registeredOption(fullName: string, optionName: string): RegisterOptions;
-}
-```
-
-This will be updated to use an [`Identifier`](#identifier) instead of a string:
-
-```ts
-interface Owner {
-  registeredOption(identifier: Identifier, optionName: string): RegisterOptions;
-}
-```
-
-#### `Owner.registeredOptions`
-
-The `registeredOptions` method is currently defined as:
-
-```ts
-interface Owner {
-  registeredOptions(fullName: string): RegisterOptions;
-}
-```
-
-This will be updated to use an [`Identifier`](#identifier) instead of a string:
-
-```ts
-interface Owner {
-  registeredOptions(identifier: Identifier): RegisterOptions;
-}
-```
-
-#### `Owner.registeredOptionsForType`
-
-The `registeredOptionsForType` method is currently defined as:
-
-```ts
-interface Owner {
-  registeredOptionsForType(type: string): RegisterOptions;
-}
-```
-
-This will be updated to use an [`Identifier`](#identifier) instead of a string:
-
-```ts
-interface Owner {
-  registeredOptionsForType(type: FactoryTypeIdentifier): RegisterOptions;
-}
-```
-
-#### `Owner.resolveRegistration`
-
-The `resolveRegistration` method is currently defined as:
-
-```ts
-interface Owner {
-  resolveRegistration(type: string): Factory;
-}
-```
-
-This will be updated to use an [`Identifier`](#identifier) instead of a string:
-
-```ts
-interface Owner {
-  resolveRegistration(identifier: Identifier): Factory;
-}
-```
-
-#### `Owner.unregister`
-
-The `unregister` method is currently defined as:
-
-```ts
-interface Owner {
-  unregister(fullName: string): void;
-}
-```
-
-This will be updated to use an [`Identifier`](#identifier) instead of a string:
-
-```ts
-interface Owner {
-  unregister(identifier: Identifier): void;
-}
+-  unregister(fullName: string): void;
++  unregister(identifier: Identifier): void;
+ }
 ```
 
 ### Codemod
