@@ -58,14 +58,32 @@ export default Component.extend({
 })
 ```
 
-To make this work for e.g. the `lookup` API, though, users would have to add this to the bottom of the file:
+To make this work for e.g. the `lookup` API, though, users would have to add *another* declaration to the bottom of the file (which, again, could be generated, but is very annoying):
 
-```ts
-declare module 'TBD-some-registry-spot' {
-  interface Registry {
-    'service:session': Session;
+```diff
+  import Service from '@ember/service';
+  
+  export default class Session extends Service {
+    login(email: string, password: string) {
+      // ...
+    }
+    
+    logout() {
+      // ...
+    }
   }
-}
+  
+  declare module '@ember/service' {
+    interface Registry {
+      session: Session;
+    }
+  }
+  
++ declare module 'TBD-some-registry-spot' {
++   interface Registry {
++     'service:session': Session;
++   }
++ }
 ```
 
 This *works*, but is additional boilerplate… which can be avoided by a better API. With the new design proposed by this RFC, users would still need *one* bit of boilerplate in their files, but the types for `lookup` and other registry APIs can be extended in a way transparent to users so that they “just work” with *zero* additional effort. (For details, see [**Appendix: TypeScript**](#appendix-type-script).)
