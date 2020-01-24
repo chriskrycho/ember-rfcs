@@ -43,6 +43,32 @@ Finally, there *may* be some very small performance wins here, since in this sch
 
 Every registry API will be updated to take a new `Identifier` type in place of the string microsyntax, while maintaining backwards compatibility by introducing versioning to the resolver. A codemod will be provided to allow users to migrate directly to the new API. The legacy resolver APIs are deprecated until Ember 4.0.
 
+###  Introducing a Resolver schema version
+
+Ember’s `Resolver` function is public API, designed to be customized and overridden. To support backwards compatibility with existing custom resolvers, we introduce a `schemaVersion` key to the `Resolver` API, which may be `undefined` or an integer value. If `schemaVersion` is `undefined` or `0`, the legacy behavior of the resolver is maintained:
+
+```ts
+interface ResolverV0 {
+  schemaVersion?: 0;
+  resolve(fullName: string);
+}
+```
+
+If `schemaVersion` is `1`, the `resolve` function has a new signature, using the `Identifier` type introduced above:
+
+```ts
+interface ResolverV1 {
+  schemaVersion: 1;
+  resolve(identifier: Identifier)
+}
+```
+
+The public API is *either* of the Resolver variants:
+
+```ts
+type Resolver = ResolverV0 | ResolverV1;
+```
+
 
 ## How we teach this
 
