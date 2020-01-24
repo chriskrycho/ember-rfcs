@@ -77,7 +77,7 @@ vs.
 + lookup({ type: 'service', name: 'foo' })
 ```
 
-This is a less flexible proposal, and—more importantly—it has a significant downside for usability beyond the simplest case. Supporting namespaces here would require *another* string argument, and functions with multiple arguments of the same type are notoriously easy to misuse. ("Which one goes first, namespace, or type?")
+This is a less flexible proposal, and—more importantly—it has a significant downside for usability beyond the simplest case. Supporting namespaces here would require *another* string argument, and functions with multiple arguments of the same type are notoriously easy to misuse. (“Wait, what’s the order? Namespace first or type first? Does namespace come after type, or after name?” etc.)
 
 ### String-based API as “sugar”
 
