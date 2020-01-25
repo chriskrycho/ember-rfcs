@@ -7,7 +7,7 @@
 
 ## Summary
 
-Introduce a new, object-based API for all registry APIs; deprecate the current single-string-based registry APIs; and introduce a `schema` property to the resolver to safely support existing resolvers.
+Introduce a new, object-based API for all registry APIs; deprecate the current single-string-based registry APIs; and introduce a `capabilities` property to the resolver to safely support existing resolvers.
 
 Today the registry APIs are all of shapes roughly like this:
 
@@ -77,35 +77,42 @@ As is the case in the microsyntax-based design, these factory type injections ma
 
 ### `Resolver`
 
-Ember’s `Resolver` function is public API, designed to be customized and overridden. To support backwards compatibility with existing custom resolvers, we introduce a `schemaVersion` key to the `Resolver` API, which may be `undefined` or an integer value. If `schemaVersion` is `undefined` or `0`, the legacy behavior of the resolver is maintained:
+Ember’s `Resolver` function is public API, designed to be customized and overridden. To support backwards compatibility with existing custom resolvers, and following the lead of the [Custom Components RFC (#0213)](https://github.com/emberjs/rfcs/blob/master/text/0213-custom-components.md#capabilities) and the [Element Modifiers RFC (#0373)](https://github.com/emberjs/rfcs/blob/master/text/0373-Element-Modifier-Managers.md#capabilities), we introduce a `capabilities` property to the `Resolver` API, which may be `undefined` or the return value of a new `capabilities` function, which defines a `Capabilities` type.
+
+The `capabilities` function is a public export of the `@ember/application` module:
 
 ```ts
-interface ResolverV0 {
-  schemaVersion?: 0;
-  resolve(fullName: string);
+interface OptionalCapabilities {
+  modulesBased?: boolean;
+  disableMicrosyntax?: boolean;
+}
+
+export function capabilities(compatVersion: '3.18', capabilities?: OptionalCapabilities): unknown;
+```
+
+The return type of `capabilities` is `unknown` for public consumers; the actual return type is private API and should not be relied on by implementors of custom resolvers.
+
+During the 3.x Ember series, if `capabilities` is `undefined`, the legacy behavior of the resolver is maintained. The signature of the `Resolver` type is therefore:
+
+```ts
+interface Resolver {
+  capabilities?: Capabilities;
+  resolve(identifier: string | Identifier);
 }
 ```
 
-If `schemaVersion` is `1`, the `resolve` function has a new signature, using the `Identifier` type introduced above:
+After Ember 4.0, the type a custom resolver must implement will be updated so that `capabilities` will be required and `resolve` will only accept an `Identifier`:
 
 ```ts
-interface ResolverV1 {
-  schemaVersion: 1;
-  resolve(identifier: Identifier)
+interface Resolver {
+  capabilities: Capabilities;
+  resolve(identifier: Identifier);
 }
 ```
 
-The public API is *either* of the Resolver variants:
+This design is completely backwards compatible: it continues working exactly as it does today. (See [**Detailed Design > Rollout**](#rollout) below for details.) Until 4.0, both apps and addons will be able to use the microsyntax-based API *or* the  It also allows for clean interop for existing custom resolvers.
 
-```ts
-type Resolver = ResolverV0 | ResolverV1;
-```
-
-The other registry API changes may also be implemented in terms of the new resolver `schemaVersion` check.
-
-This design is completely backwards compatible: it continues working exactly as it does today. `ember-resolver` will introduce support in a minor version, then later deprecate the microsyntax in a later minor version, and finally release a breaking change which drops support for the microsyntax.
-
-There is also some prior art for this kind of schema versioning: [a similar “stamp”](https://github.com/emberjs/ember.js/pull/9994) was used for accomodating different behaviors when using the modules-based resolver vs. not (back in 2014)!
+Besides the recent use of capabilities in the modifier and component managers, there is also some prior art for this kind of versioning applied to the resolver specifically: [a similar “stamp”](https://github.com/emberjs/ember.js/pull/9994) was used for accomodating different behaviors when using the modules-based resolver vs. not (back in 2014)!
 
 ### Owner APIs
 
@@ -130,8 +137,6 @@ Some `Owner` registry APIs take lookup or registration options. This RFC does no
 export interface LookupOptions {
   singleton?: boolean;
   instantiate?: boolean;
-  source?: string;
-  namespace?: string;
 }
 
 interface RegisterOptions {
@@ -320,6 +325,34 @@ For Ember only:
 
 ## Alternatives
 
+### Supply just `schema` instead of `capabilities`
+
+Instead of the manager-inspired `capabilities` API, we could implement a simpler design with simply supplies a `schemaVersion` (or just `schema`) property on the `Resolver` type. This is less flexible, but also simpler.
+
+```ts
+interface ResolverV0 {
+  schemaVersion?: 0;
+  resolve(fullName: string);
+}
+```
+
+If `schemaVersion` is `1`, the `resolve` function has a new signature, using the `Identifier` type introduced above:
+
+```ts
+interface ResolverV1 {
+  schemaVersion: 1;
+  resolve(identifier: Identifier)
+}
+```
+
+The public API is *either* of the Resolver variants:
+
+```ts
+type Resolver = ResolverV0 | ResolverV1;
+```
+
+The other registry API changes may also be implemented in terms of the new resolver `schemaVersion` check.
+
 ### A new String-based API
 
 Instead of providing an object-based API, we could provide a new string-based API. The `lookup` method, then, would have a signature like this:
@@ -389,6 +422,8 @@ As far as implementation goes, this would be more complex and have much worse pe
 Leaving the API as it is remains an option, with both the upsides and downsides of the _status quo_.
 
 ## Unresolved questions
+
+- Is `@ember/application` the appropriate home for the new exports? Or should they liver somewhere else, such as `@ember/resolver` or `@ember/application/resolver`?
 
 - What is the right name for the parameter and interface for the lookup? `identifier` is a reasonable choice, but does overlap with the notion of identifiers from Ember Data. It is also *quite* generic. We could use any of a number of longer but perhaps clearer names:
     - `RegistrationIdentifier`
