@@ -530,6 +530,7 @@ We would introduce the following types at DefinitelyTyped for the new API, along
 
 ```ts
 // ----- type utilities ----- //
+
 type ConstructorArgs<T> = T extends new (...args: infer U) => unknown ? U : never;
 
 type InstanceOf<T> = T extends new (...args: any) => infer R ? R : never;
@@ -537,6 +538,20 @@ type InstanceOf<T> = T extends new (...args: any) => infer R ? R : never;
 type ConstructorFor<T> = new (...args: ConstructorArgs<T>) => InstanceOf<T>;
 
 // ----- types to implement this RFC ----- //
+
+// NOTE: some of these lookups will be newly defined as part of this
+//       project, e.g. the registries for routes and components.
+interface TypeRegistry {
+  service: import('@ember/service').Registry;
+  controller: import('@ember/controller').Registry;
+  route: import('@ember/routing/route').Registry;
+  component: import('@typed-ember/component').Registry;
+  adapter: import('ember-data/types/registries/adapter').default;
+  model: import('ember-data/types/registries/model').default;
+  serializer: import('ember-data/types/registries/serializer').default;
+  transform: import('ember-data/types/registries/transform').default;
+}
+
 interface Identifier<
   Type extends keyof TypeRegistry,
   Name extends keyof TypeRegistry[Type]
