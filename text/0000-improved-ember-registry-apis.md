@@ -235,6 +235,45 @@ The majority of uses are likely to be codemoddable, but not *all* will.
 
 ### Deprecation messaging
 
+#### Guide
+
+> #### Deprecate registry string-based microsyntax
+> ##### until: 4.0.0
+> ##### id: ember-resolver.string-based-microsyntax
+> 
+> Ember has historically supported a string-based microsyntax of the format `'<namespace>@<type>:<name>'` (where both `<namespace>@` and `:<name>` are optional) for registering, resolving, looking up, and injecting items into Ember’s dependency injection container. These have been replaced with an object-based API where each part of the registry identifier is named explicitly.
+> 
+> You should replace calls using the string-based microsyntax with the new API. For example, these lookups in a test context:
+> 
+> ```js
+> this.owner.lookup('service:session');
+> this.owner.register(
+>   'shared@service:clipboard',
+>   class Clipboard {
+>     copyToClipboard(source) {/* no-op */}
+>   }
+> )
+> ```
+>
+> Should be changed to:
+> 
+> ```js
+> this.owner.lookup({ type: 'service', name: 'session' });
+> this.owner.register(
+>   { namespace: 'shared', type: 'service', name: 'clipboard' },
+>   class Clipboard {
+>     copyToClipboard(source) {/* no-op */}
+>   }
+> );
+> this.owner.inject(
+>   { type: 'controller' },
+>   'session',
+>   { type: 'service', name: 'session' }
+> );
+> ```
+
+#### In-app
+
 Invocation of v0 resolver APIs which require an `Identifier` will trigger the following deprecation message (using `lookup` as an example):
 
 > You invoked `Owner.lookup` with a `string` full name: `'<type>:<name>'`. This usage is deprecated and will be removed in Ember 4.0. Instead, pass an object identifier: `{ type: '<type>', name: '<name>' }`.
