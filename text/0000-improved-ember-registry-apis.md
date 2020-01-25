@@ -5,6 +5,36 @@
 
 # Improved Ember Registry APIs
 
+- [Summary](#summary)
+- [Motivation](#motivation)
+  - [Microsyntax](#microsyntax)
+  - [TypeScript users](#typescript-users)
+  - [Performance?](#performance)
+- [Detailed design](#detailed-design)
+  - [`Identifier`](#identifier)
+  - [`Resolver`](#resolver)
+  - [Owner APIs](#owner-apis)
+    - [Options](#options)
+    - [`Factory` and `FactoryManager`](#factory-and-factorymanager)
+    - [`Owner` API diff](#owner-api-diff)
+  - [Codemod](#codemod)
+  - [Deprecation messaging](#deprecation-messaging)
+    - [Guide](#guide)
+    - [In-app](#in-app)
+  - [Rollout](#rollout)
+- [How we teach this](#how-we-teach-this)
+- [Drawbacks](#drawbacks)
+- [Alternatives](#alternatives)
+  - [Supply just `schema` instead of `capabilities`](#supply-just-schema-instead-of-capabilities)
+  - [A new String-based API](#a-new-string-based-api)
+  - [String-based API as “sugar”](#string-based-api-as-sugar)
+  - [Object-based API](#object-based-api)
+  - [Do nothing](#do-nothing)
+- [Unresolved questions](#unresolved-questions)
+- [Appendix: TypeScript](#appendix-typescript)
+  - [TypeScript motivation](#typescript-motivation)
+  - [Proposed type definitions](#proposed-type-definitions)
+
 ## Summary
 
 Introduce a new, object-based API for all registry APIs; deprecate the current single-string-based registry APIs; and introduce a `capabilities` property to the resolver to safely support existing resolvers.
