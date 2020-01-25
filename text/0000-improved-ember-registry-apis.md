@@ -7,9 +7,9 @@
 
 - [Summary](#summary)
 - [Motivation](#motivation)
-  - [Microsyntax](#microsyntax)
-  - [TypeScript users](#typescript-users)
-  - [Performance?](#performance)
+  - [Microsyntax problems](#microsyntax-problems)
+  - [TypeScript problems](#typescript-problems)
+  - [Performance benefits?](#performance-benefits)
 - [Detailed design](#detailed-design)
   - [`Identifier`](#identifier)
   - [`Resolver`](#resolver)
@@ -55,7 +55,7 @@ getOwner(this).lookup({ type: 'service', name: 'session' })
 
 There are two primary motivations here: replacing the string-based microsyntax with an idiomatic JavaScript API, and making the API more amenable to correct types for TypeScript users.
 
-### Microsyntax
+### Microsyntax problems
 
 The current design has worked well enough for a long time, but it adds conceptual overhead to learning how to use Ember. JavaScript has a lightweight and easy way of defining sets of related data: plain old JavaScript objects. By contrast, the existence of this Ember-specific microsyntax requires users to learn a new concept and internalize how it works when they first encounter the registry APIs.
 
@@ -63,11 +63,11 @@ This need often comes relatively early in the learning process: the first time a
 
 Changing to a normal JavaScript-object-based API means tooling can provide in-editor benefits around autocompletion for the API, which is simply not possible for the microsyntax. Finally, a non-microsyntax API will be more amenable to future codemods if this should need to change in the future.
 
-### TypeScript users
+### TypeScript problems
 
 For TypeScript users, the current API is not type-safe, and can be made so only with considerable extra work by developers and the Typed Ember maintainers. Blueprint maintenance and end users’ mental overhead associated with existing solutions for Ember’s stringly-typed APIs would effectively have to *double* to provide type safety for today’s registry APIs. For details, see [**Appendix: Typescript**](#appendix-typescript).
 
-### Performance?
+### Performance benefits?
 
 Finally, there *may* be some very small performance wins here, since in this schema there is no need to parse a string. This is not considered to be a significant motivator, however, since the tradeoffs between object allocation (memory utilization) and string parsing (CPU utilization) are likely to be largely irrelevant in practice for this API.
 
