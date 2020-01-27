@@ -17,6 +17,7 @@
     - [Options](#options)
     - [`Factory` and `FactoryManager`](#factory-and-factorymanager)
     - [`Owner` API diff](#owner-api-diff)
+  - [Service and Controller Injections](#service-and-controller-injections)
   - [Codemod](#codemod)
   - [Deprecation messaging](#deprecation-messaging)
     - [Guide](#guide)
@@ -244,6 +245,58 @@ Some APIs refer to *factories* and *factory managers*. The API for these classes
 +  unregister(identifier: Identifier): void;
  }
 ```
+
+### Service and Controller Injections
+
+The other major examples of registry interactions are service and controller injections. This RFC proposes to normalize both to support the same identifier-based lookup as the `Owner` APIs.
+
+We introduce an `InjectionIdentifier` type, representing the service or controller to be injected:
+
+```ts
+interface InjectionIdentifier {
+  name: string;
+  namespace?: string;
+}
+```
+
+The `inject` (whether `as service` or `as controller`) function now accepts *either* a string representing the  *or* an `InjectionIdentifier`:
+
+- **Service:**
+    ```ts
+    export function inject(name: string): Service;
+    export function inject(identifier: InjectionIdentifier): Service;
+    ```
+
+- **Controller:**
+    ```ts
+    export function inject(name: string): Controller;
+    export function inject(identifier: InjectionIdentifier): Controller;
+    ```
+
+The `'<namespace>@<name>'` form is deprecated and will be removed at 4.0. The no-argument form, and the name-only string form are still allowed. Users *may* invoke using `{ name: '<name>' }` but are not required to.
+
+- **Good** (using services as an example):
+
+    ```js
+    import { inject as service } from '@ember/service';
+
+    export default class Example {
+      @inject foo;
+      @inject('bar') barRenamed;
+      @inject({ name: 'quux' }) quuxViaIdentifier;
+      @inject({ namespace: 'baz', name: 'neato' }): neatoNamespaced;
+    }
+    ```
+
+- **Deprecated:**
+
+    ```js
+    import { inject as service } from '@ember/service';
+
+    export default class Example {
+      @inject('baz@neato') neatoNamespaced;
+    }
+    ```
 
 ### Codemod
 
