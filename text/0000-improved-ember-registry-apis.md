@@ -52,6 +52,24 @@ This RFC proposes that they would instead be written like this:
 getOwner(this).lookup({ type: 'service', name: 'session' })
 ```
 
+Service and controller injections which include a namespace currently look like this:
+
+```js
+class Example {
+  @service('global@session')
+  session;
+}
+```
+
+This RFC proposes that these would instead be written like this:
+
+```js
+class Example {
+  @service({ namespace: 'global', name: 'session' })
+  session;
+}
+```
+
 ## Motivation
 
 There are two primary motivations here: replacing the string-based microsyntax with an idiomatic JavaScript API, and making the API more amenable to correct types for TypeScript users.
