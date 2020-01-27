@@ -38,7 +38,7 @@
 
 ## Summary
 
-Introduce a new, object-based API for all registry APIs; deprecate the current single-string-based registry APIs; and introduce a `capabilities` property to the resolver to safely support existing resolvers.
+Introduce a new, object-based API for all registry APIs; deprecate the current string-based microsyntax registry APIs; and introduce a `capabilities` property to the resolver to safely support existing resolvers. Extend the new API for service and controller injections, and deprecate their microsyntax for namespaced injections.
 
 Today the registry APIs are all of shapes roughly like this:
 
